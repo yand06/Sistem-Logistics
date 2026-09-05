@@ -6,11 +6,11 @@
 - Role: admin
 
 ## Demo Users (all use password: Demo@2026)
-- sales@nusafreight.com â€” Sales
-- cs@nusafreight.com â€” Customer Service
-- customs@nusafreight.com â€” Customs
-- finance@nusafreight.com â€” Finance
-- pricing@nusafreight.com â€” Pricing
+- sales@nusafreight.com — Sales
+- cs@nusafreight.com — Customer Service
+- customs@nusafreight.com — Customs
+- finance@nusafreight.com — Finance
+- pricing@nusafreight.com — Pricing
 
 ## Endpoints
 - POST /api/auth/login  {email, password}
