@@ -991,7 +991,8 @@ async def startup():
             )
 
     # Write test credentials
-    creds_path = Path("/app/memory/test_credentials.md")
+    BASE_DIR = Path(__file__).resolve().parent
+    creds_path = BASE_DIR / "memory" / "test_credentials.md"
     creds_path.parent.mkdir(parents=True, exist_ok=True)
     creds_path.write_text(
         f"""# NusaFreight ERP Test Credentials
