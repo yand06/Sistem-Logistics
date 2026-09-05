@@ -5,26 +5,20 @@ import { useAuth } from "../store/auth";
 import { PageHeader, Section, Card, formatCurrency } from "../components/layout/UI";
 import { TrendingUp, Package, Receipt, ShieldCheck, BellRing, DollarSign, Users, FileText } from "lucide-react";
 
-function KPI({ icon: Icon, label, value, tone = "blue", testId }: any) {
-  const toneMap: any = {
-    blue: "from-blue-600/20 to-blue-600/0 text-blue-300 border-blue-500/20",
-    emerald: "from-emerald-600/20 to-emerald-600/0 text-emerald-300 border-emerald-500/20",
-    amber: "from-amber-600/20 to-amber-600/0 text-amber-300 border-amber-500/20",
-    rose: "from-rose-600/20 to-rose-600/0 text-rose-300 border-rose-500/20",
-    indigo: "from-indigo-600/20 to-indigo-600/0 text-indigo-300 border-indigo-500/20",
-    cyan: "from-cyan-600/20 to-cyan-600/0 text-cyan-300 border-cyan-500/20",
-  };
+function KPI({ icon: Icon, label, value, testId }: any) {
   return (
     <div
       data-testid={testId}
-      className={`relative rounded-xl border p-5 overflow-hidden bg-gradient-to-br ${toneMap[tone]}`}
+      className="rounded-xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm"
     >
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-[11px] font-semibold uppercase tracking-widest opacity-70">{label}</div>
-          <div className="font-display text-3xl font-bold text-slate-50 mt-2 tabular font-mono">{value}</div>
+          <div className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{label}</div>
+          <div className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50 mt-2 tabular font-mono">{value}</div>
         </div>
-        <Icon className="h-6 w-6 opacity-80" />
+        <div className="h-9 w-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <Icon className="h-4.5 w-4.5 text-slate-500 dark:text-slate-400" />
+        </div>
       </div>
     </div>
   );
@@ -55,14 +49,14 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {d?.quotations && (
             <>
-              <KPI testId="kpi-quot-total" icon={FileText} label="Quotations" value={d.quotations.total} tone="blue" />
-              <KPI testId="kpi-quot-executed" icon={TrendingUp} label="Executed" value={d.quotations.executed} tone="emerald" />
+              <KPI testId="kpi-quot-total" icon={FileText} label="Quotations" value={d.quotations.total} />
+              <KPI testId="kpi-quot-executed" icon={TrendingUp} label="Executed" value={d.quotations.executed} />
             </>
           )}
           {d?.job_orders && (
             <>
-              <KPI testId="kpi-jo-total" icon={Package} label="Job Orders" value={d.job_orders.total} tone="cyan" />
-              <KPI testId="kpi-jo-transit" icon={Package} label="In Transit" value={d.job_orders.in_transit} tone="indigo" />
+              <KPI testId="kpi-jo-total" icon={Package} label="Job Orders" value={d.job_orders.total} />
+              <KPI testId="kpi-jo-transit" icon={Package} label="In Transit" value={d.job_orders.in_transit} />
             </>
           )}
           {d?.invoices && (
@@ -72,69 +66,68 @@ export default function Dashboard() {
                 icon={Receipt}
                 label="Outstanding"
                 value={formatCurrency(d.invoices.outstanding)}
-                tone="amber"
               />
-              <KPI testId="kpi-inv-paid" icon={DollarSign} label="Collected" value={formatCurrency(d.invoices.paid)} tone="emerald" />
+              <KPI testId="kpi-inv-paid" icon={DollarSign} label="Collected" value={formatCurrency(d.invoices.paid)} />
             </>
           )}
           {d?.customs && (
             <>
-              <KPI testId="kpi-customs-pending" icon={ShieldCheck} label="Customs Pending" value={d.customs.pending} tone="amber" />
-              <KPI testId="kpi-customs-cleared" icon={ShieldCheck} label="Customs Cleared" value={d.customs.cleared} tone="emerald" />
+              <KPI testId="kpi-customs-pending" icon={ShieldCheck} label="Customs Pending" value={d.customs.pending} />
+              <KPI testId="kpi-customs-cleared" icon={ShieldCheck} label="Customs Cleared" value={d.customs.cleared} />
             </>
           )}
-          <KPI testId="kpi-arrivals" icon={BellRing} label="Arrivals H-2" value={d?.arrivals_h2 ?? 0} tone="rose" />
+          <KPI testId="kpi-arrivals" icon={BellRing} label="Arrivals H-2" value={d?.arrivals_h2 ?? 0} />
         </div>
 
         <Card className="p-6">
-          <div className="text-[11px] font-semibold uppercase tracking-widest text-blue-400 mb-3">Quick actions</div>
+          <div className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-3">Quick actions</div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
             {user.role === "sales" && (
               <>
-                <a href="/quotation" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+                <a href="/quotation" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                   ➜ Create Quotation
                 </a>
-                <a href="/sales/tax-calc" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+                <a href="/sales/tax-calc" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                   ➜ Import Tax Calculator
                 </a>
               </>
             )}
             {user.role === "cs" && (
-              <a href="/job-order" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+              <a href="/job-order" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                 ➜ Manage Job Orders
               </a>
             )}
             {user.role === "finance" && (
               <>
-                <a href="/finance/invoice" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+                <a href="/finance/invoice" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                   ➜ Issue Invoice
                 </a>
-                <a href="/finance/kurs" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+                <a href="/finance/kurs" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                   ➜ Update Kurs
                 </a>
               </>
             )}
             {user.role === "customs" && (
-              <a href="/customs" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+              <a href="/customs" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                 ➜ Customs Docs
               </a>
             )}
             {user.role === "pricing" && (
-              <a href="/pricing" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+              <a href="/pricing" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                 ➜ Update Weekly Prices
               </a>
             )}
             {user.role === "admin" && (
               <>
-                <a href="/admin/users" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+                <a href="/admin/users" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                   ➜ Manage Users
                 </a>
-                <a href="/admin/audit" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+                <a href="/admin/audit" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                   ➜ Audit Log
                 </a>
               </>
             )}
-            <a href="/schedule-arrive" className="rounded-md border border-white/10 p-3 hover:bg-white/[0.04]">
+            <a href="/schedule-arrive" className="rounded-md border border-slate-300 dark:border-slate-800 p-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
               ➜ Schedule Arrive (H-2)
             </a>
           </div>

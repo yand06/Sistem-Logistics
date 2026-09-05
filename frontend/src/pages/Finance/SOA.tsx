@@ -29,7 +29,7 @@ export default function SOA() {
             {soa && (
               <div className="flex gap-6 ml-auto text-sm">
                 <div><span className="text-slate-500 text-xs">Total </span><span className="font-mono font-bold">{formatCurrency(soa.total)}</span></div>
-                <div><span className="text-slate-500 text-xs">Outstanding </span><span className="font-mono font-bold text-amber-300">{formatCurrency(soa.outstanding)}</span></div>
+                <div><span className="text-slate-500 text-xs">Outstanding </span><span className="font-mono font-bold text-amber-600">{formatCurrency(soa.outstanding)}</span></div>
               </div>
             )}
           </div>

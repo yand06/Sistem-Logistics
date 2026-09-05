@@ -26,7 +26,7 @@ export default function ScheduleArrive() {
       />
       <Section>
         <Card>
-          <CardHeader title={`Pending H-2 (${arrivals.length})`} action={<BellRing className="h-4 w-4 text-rose-300" />} />
+          <CardHeader title={`Pending H-2 (${arrivals.length})`} action={<BellRing className="h-4 w-4 text-red-500" />} />
           <Table
             testId="arrivals-table"
             empty="Nothing arriving in the next 48 hours."

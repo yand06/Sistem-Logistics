@@ -11,13 +11,27 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, refetchOnWindowFocus: false } },
 });
 
+function GlobalToaster() {
+  const [isDark, setIsDark] = React.useState(() => document.documentElement.classList.contains("dark"));
+
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  return <Toaster richColors position="top-right" theme={isDark ? "dark" : "light"} />;
+}
+
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <AuthProvider>
         <App />
-        <Toaster richColors position="top-right" theme="dark" />
+        <GlobalToaster />
       </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>
