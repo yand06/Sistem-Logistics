@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+
+@layer base {
+  :root {
+    --background: 220 26% 7%;
+    --foreground: 210 20% 98%;
+    --card: 220 22% 11%;
+    --card-foreground: 210 20% 98%;
+    --popover: 220 22% 11%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 18% 16%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 220 18% 16%;
+    --muted-foreground: 217 10% 65%;
+    --accent: 220 18% 18%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 346 84% 46%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 217 91% 60%;
+    --radius: 0.5rem;
+  }
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+html, body, #root {
+  min-height: 100vh;
+  background: #0B0F17;
+  color: hsl(var(--foreground));
+}
+body {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+h1, h2, h3, h4, .font-display {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+.font-mono, code, pre, .tabular {
+  font-family: "JetBrains Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle grid backdrop */
+.grid-bg {
+  background-image:
+    radial-gradient(circle at 25% 15%, rgba(37, 99, 235, 0.08), transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(2, 132, 199, 0.06), transparent 45%),
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: auto, auto, 32px 32px, 32px 32px;
+}
+
+.scroll-thin::-webkit-scrollbar { height: 8px; width: 8px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: #1F2937; border-radius: 4px; }
+
+[data-debug-wrapper="true"] { display: contents !important; }

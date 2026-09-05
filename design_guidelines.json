@@ -1,0 +1,140 @@
+{
+  "project_info": {
+    "name": "NusaFreight ERP - Freight Forwarding & Logistics Management System",
+    "type": "hybrid_fullstack enterprise ERP dashboard",
+    "target_audience": "Internal Freight Forwarding Teams (Sales, CS, Customs, Finance, Pricing, Admin)",
+    "description": "Enterprise-grade logistics management system featuring granular RBAC, real-time quotation calculators, heavy data tables with column-level security, Customs import tax calculators, multi-currency financial accounting, XML Coretax export, and live shipment tracking."
+  },
+  "theme_strategy": {
+    "default_mode": "dark",
+    "supports_toggle": true,
+    "rationale": "High-density enterprise data operations require crisp contrast, low eye fatigue during long shifts, and a sleek tactical aesthetic combining dark slate with vibrant cobalt highlights."
+  },
+  "typography": {
+    "headline_font": "Plus Jakarta Sans, sans-serif",
+    "body_font": "IBM Plex Sans, sans-serif",
+    "mono_font": "JetBrains Mono, monospace",
+    "forbidden_fonts": ["Space Grotesk", "Inter (for headings)"],
+    "hierarchy": {
+      "h1": "text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50",
+      "h2": "text-2xl lg:text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100",
+      "h3": "text-xl font-semibold text-slate-800 dark:text-slate-200",
+      "h4": "text-lg font-medium text-slate-700 dark:text-slate-300",
+      "body": "text-sm text-slate-600 dark:text-slate-300 leading-relaxed",
+      "small_label": "text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-400",
+      "tabular_nums": "font-mono font-medium text-slate-900 dark:text-slate-100"
+    }
+  },
+  "colors": {
+    "archetype": "THE PERFORMANCE PRO / SWISS HIGH-CONTRAST LOGISTICS",
+    "forbidden_colors": ["#1B93A4 (Teal Blue/Green)", "#7351B7 (AI Purple)"],
+    "palette": {
+      "background_dark": "#0B0F17",
+      "surface_dark": "#111827",
+      "surface_card_dark": "#1F2937",
+      "surface_card_hover_dark": "#273549",
+      "border_dark": "rgba(255, 255, 255, 0.08)",
+      "background_light": "#F8FAFC",
+      "surface_light": "#FFFFFF",
+      "border_light": "#E2E8F0",
+      "primary_brand": "#2563EB",
+      "primary_hover": "#1D4ED8",
+      "primary_light": "#DBEAFE",
+      "accent_cyan": "#0284C7",
+      "accent_emerald": "#059669",
+      "accent_amber": "#D97706",
+      "accent_rose": "#E11D48",
+      "text_dark_primary": "#F9FAFB",
+      "text_dark_secondary": "#9CA3AF",
+      "text_light_primary": "#0F172A",
+      "text_light_secondary": "#475569"
+    },
+    "status_badges": {
+      "draft": "bg-slate-500/10 text-slate-400 border-slate-500/20",
+      "pending_approval": "bg-amber-500/10 text-amber-400 border-amber-500/20",
+      "approved_active": "bg-blue-500/10 text-blue-400 border-blue-500/20",
+      "in_transit": "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+      "customs_cleared": "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+      "completed": "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+      "overdue_alert": "bg-rose-500/10 text-rose-400 border-rose-500/20"
+    }
+  },
+  "spacing_and_layout": {
+    "grid_mode": "MODE B: High Density Enterprise Grid",
+    "container_padding": "p-4 sm:p-6 lg:p-8",
+    "card_padding": "p-5 sm:p-6",
+    "table_density": "compact padded rows with subtle hover highlights",
+    "gap_strategy": "gap-4 sm:gap-6",
+    "alignment": "Strict left-aligned text, right-aligned monetary & numerical figures"
+  },
+  "components_and_structure": {
+    "sidebar_navigation": {
+      "style": "Fixed collapsible sidebar with division badge and active role switcher",
+      "features": [
+        "Role-scoped menu visibility (Sales, CS, Customs, Finance, Pricing, Admin)",
+        "Role switcher for demonstration/testing with immediate UI scope shift",
+        "Active shipment counter badge",
+        "Schedule Arrive H-2 alert ticker"
+      ]
+    },
+    "data_tables": {
+      "style": "High-density TanStack Table styling with sticky header, column visibility manager, sorting, filtering, and RBAC column locks",
+      "features": [
+        "Granular column access (e.g., CS sees operational columns; Finance unlocks Revenue, Buy/Sell Rates, and Net Margin columns)",
+        "Export options (CSV, Excel, XML Coretax format)",
+        "Inline status steppers and quick action menus"
+      ]
+    },
+    "customs_tax_calculator": {
+      "inputs": ["FOB Value", "Freight", "Insurance", "Valuta (USD/EUR/RMB/SGD)", "Weekly Kurs Tax Rate", "Bea Masuk (BM) %", "PPN (11%)", "PPh 22 (2.5% with API/NPWP or 7.5% without)"],
+      "outputs": ["Nilai CIF (IDR)", "Bea Masuk Amount", "Nilai Impor", "PPN Amount", "PPh 22 Amount", "Total Pajak Import & PDTT"]
+    },
+    "quotation_calculator": {
+      "inputs": ["Origin Port", "Destination Port", "Container Type (20GP, 40HC, LCL)", "Weight (KG)", "Volume (CBM)", "Ocean/Air Freight Rate", "THC Origin & Dest", "Trucking Fee", "Customs Clearance Fee", "Admin/Doc Fee", "Sales Margin %"],
+      "outputs": ["Cost Subtotal", "Calculated Margin", "Final Quotation Price (IDR & USD)", "PDF/Print Preview Generator"]
+    },
+    "job_order_management": {
+      "features": [
+        "Document standard uploader (BL, CIPL, COO) with auto-rename rule (`[JOB_NO]_[DOC_TYPE]_[DATE]`)",
+        "Shipment progress timeline stepper (Quotation -> Booking -> Pick Up -> Port Loading -> On Vessel -> Customs Clearance -> Delivered -> Invoiced)",
+        "Schedule Arrive H-2 notification system with dismissible toast alert and email summary mock"
+      ]
+    },
+    "finance_and_coretax": {
+      "features": [
+        "Invoice, CN, DN, Payment Requisition, Kasbon & Reimbursement forms",
+        "Chart of Accounts (COA) tree and Balance Sheet view",
+        "Statement of Account (SOA) generator for Customers & Partners",
+        "Export Coretax XML format generator conforming to Indonesian Directorate General of Taxes guidelines"
+      ]
+    }
+  },
+  "image_urls": {
+    "hero_container_ship": "https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHwxfHxjb250YWluZXIlMjBzaGlwJTIwcG9ydCUyMGxvZ2lzdGljc3xlbnwwfHx8fDE3ODg1ODY0MTJ8MA&ixlib=rb-4.1.0&q=85",
+    "port_cranes": "https://images.unsplash.com/photo-1605745341112-85968b19335b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHwzfHxjb250YWluZXIlMjBzaGlwJTIwcG9ydCUyMGxvZ2lzdGljc3xlbnwwfHx8fDE3ODg1ODY0MTJ8MA&ixlib=rb-4.1.0&q=85",
+    "cargo_containers": "https://images.unsplash.com/photo-1606964212858-c215029db704?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHw0fHxjb250YWluZXIlMjBzaGlwJTIwcG9ydCUyMGxvZ2lzdGljc3xlbnwwfHx8fDE3ODg1ODY0MTJ8MA&ixlib=rb-4.1.0&q=85",
+    "warehouse_forklift": "https://images.unsplash.com/photo-1714627798569-b3e36d409c4b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwxfHxjYXJnbyUyMHdhcmVob3VzZSUyMGxvZ2lzdGljcyUyMGZyZWlnaHR8ZW58MHx8fHwxNzg4NTg2NDEyfDA&ixlib=rb-4.1.0&q=85",
+    "reach_stacker": "https://images.unsplash.com/photo-1779419226072-3c21c89a8d9d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHw0fHxjYXJnbyUyMHdhcmVob3VzZSUyMGxvZ2lzdGljcyUyMGZyZWlnaHR8ZW58MHx8fHwxNzg4NTg2NDEyfDA&ixlib=rb-4.1.0&q=85"
+  },
+  "testing_strategy": {
+    "rule": "ALL interactive components, buttons, form inputs, modal dialogs, status badges, table rows, and tab triggers MUST contain a clear kebab-case data-testid attribute.",
+    "examples": {
+      "role_switcher": "data-testid=\"role-switcher-dropdown\"",
+      "quotation_submit": "data-testid=\"quotation-submit-button\"",
+      "customs_calculator_button": "data-testid=\"customs-tax-calculate-btn\"",
+      "job_order_table": "data-testid=\"job-order-data-table\"",
+      "finance_export_xml": "data-testid=\"export-coretax-xml-btn\"",
+      "h2_schedule_alert": "data-testid=\"schedule-arrive-alert-banner\""
+    }
+  },
+  "instructions_to_main_agent": [
+    "Build a modern, high-density enterprise ERP interface for Indonesian freight forwarding operations.",
+    "Ensure 6 functional roles with quick role-switching header bar: Sales, Customer Service, Customs, Finance, Pricing, Admin.",
+    "Implement column-level RBAC on Job Order table: Finance sees buy/sell profit margins, while CS sees operational milestones.",
+    "Include real-time Import Tax Calculator (PPN, PPh, Bea Masuk) and LCL Calculator (CBM vs Ton volume weight logic).",
+    "Include XML Coretax export for Finance module and auto-rename document upload for BL, CIPL, COO.",
+    "Use Sonner for active toast alerts (e.g. H-2 Schedule Arrive warnings, quotation updates, tax calculations).",
+    "Strictly follow design tokens: slate dark background #0B0F17, blue primary #2563EB, crisp 1px borders, font hierarchy with Plus Jakarta Sans & IBM Plex Sans.",
+    "Attach data-testid attributes to all interactive elements."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "summary": "First full-stack test pass of NusaFreight ERP. Backend: created pytest suite (6 files, 94 tests) covering auth/RBAC, customers + sales data isolation, quotation totals & execute, job-order CS-vs-Finance field RBAC, shipment status, documents auto-rename, schedule-arrive H-2, invoices/PPN/coretax XML/SOA, kurs & weekly-price upsert, partners, pricing LCL & import-tax calcs, trucking RBAC, customs docs, admin users CRUD, audit logs, and role dashboards. 90/94 passing (95.7%) after I fixed 3 real ObjectId serialization 500s. Frontend: verified login (manual + one-tap demo) for admin/sales/cs/finance/pricing/customs, RBAC sidebar per role, admin customer create, quotation modal live total (1000 -> 1,100 with 10% margin), import tax calc, LCL calc (200 USD), trucking/weekly tabs, invoice list + Coretax XML export toast, kurs save, partner/SOA pages, CS job order page (finance fields correctly hidden), customs page. Found 1 CRITICAL frontend data-isolation bug (React Query cache not cleared between users) and 1 missing client-side route guard.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/job-orders/{id}/shipment-status", "issue": "Unknown job_order_id returns 200 {ok:true} (silent no-op $push). Should 404. Same pattern in PATCH /api/job-orders/{id}, PATCH /api/customs-docs/{id}, POST /api/invoices/{id}/mark-paid, POST /api/schedule-arrive/{id}/confirm — none verify the document exists."},
+      {"endpoint": "POST /api/auth/login", "issue": "No brute-force lockout: 6+ consecutive wrong passwords all return 401, no 423/429 and no attempt counter."},
+      {"endpoint": "POST /api/auth/login", "issue": "No httpOnly cookie is set; JWT is returned in body only and stored in localStorage (XSS-exposed). get_current_user already reads a cookie named access_token, so the cookie path is dead code."},
+      {"endpoint": "DELETE /api/customers/{id}", "issue": "Not implemented (405). No delete/deactivate for master customers — test data and mistakes cannot be removed."},
+      {"endpoint": "POST /api/audit-logs", "issue": "Endpoint does not exist (only GET). Review request listed 'POST /api/audit-logs must be admin/finance only'; if writes are intended it is missing."},
+      {"endpoint": "startup seed_admin", "issue": "Seed only inserts admin when absent; changing ADMIN_PASSWORD in .env never updates the existing admin hash (playbook expects idempotent update)."},
+      {"endpoint": "CORS", "issue": "allow_origins=['*'] + allow_origin_regex='.*' together with allow_credentials=True. Wildcard + credentials is invalid per spec; CORS_ORIGINS from .env is never read. Use explicit origins."},
+      {"endpoint": "GET /api/job-orders, /api/documents, /api/customs-docs, /api/invoices", "issue": "No per-sales data isolation — a sales-owned job order/invoice is visible to every CS/finance/customs user. Acceptable for internal ops but inconsistent with the isolation applied to customers/quotations; confirm intent."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "AdminUsers / route guard", "issue": "No client-side RBAC route guard. Logged in as CS, navigating directly to /admin/users renders the full 'User & Role Management' page with an enabled 'New User' button (list is empty because the API 403s). Same for /finance/invoice, /pricing etc. Should redirect or render 403.", "selector": "[data-testid=\"new-user-btn\"]", "priority": "MEDIUM"},
+      {"component": "Login demo buttons", "issue": "data-testid is derived from the label (`demo-adminowner`, `demo-customerservice`) instead of the role (`demo-admin`, `demo-cs`) as documented. Inconsistent/undiscoverable test ids.", "selector": "[data-testid=\"demo-adminowner\"]", "priority": "LOW"}
+    ],
+    "integration_issues": [
+      {"flow": "Logout -> login as a different role (SPA, no page reload)", "issue": "CRITICAL data leak: the React Query cache is never cleared on logout/login (index.tsx staleTime=30s, no queryClient.clear() in auth.logout/login). After logging out of admin and logging in as sales@nusafreight.com, /master/customer showed 'Customers (20)' including customers owned by Admin (Owner)/other sales, and the Dashboard rendered the admin-only KPIs (Job Orders, Outstanding/Collected invoice amounts, Customs Pending/Cleared) for the Sales user. A hard reload as sales correctly shows 'Customers (7)' and only quotation/arrival KPIs, proving the backend is correct and this is purely client cache reuse across identities. Fix: call queryClient.clear() (or removeQueries) inside logout() and after successful login().", "affected_selectors": ["[data-testid=\"customer-table\"]", "[data-testid=\"kpi-inv-out\"]", "[data-testid=\"kpi-jo-total\"]", "[data-testid=\"kpi-customs-pending\"]"]}
+    ],
+    "design_issues": [
+      {"screen": "Layout sidebar", "issues": ["The user/logout footer uses `absolute bottom-0 w-64` but the parent <aside> has no `relative`, so it positions against the initial containing block; on short viewports with a long menu it can overlap nav items. Add `relative` to the aside."]},
+      {"screen": "Global", "issues": ["No loading skeletons or error states on any list page — useQuery isLoading/isError are unused, so a failed API call silently renders an empty table (visible on CS -> /admin/users which shows 'Users (0)' instead of an access-denied message)."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/conftest.py",
+    "/app/backend/tests/test_auth.py",
+    "/app/backend/tests/test_customers.py",
+    "/app/backend/tests/test_quotation.py",
+    "/app/backend/tests/test_job_order.py",
+    "/app/backend/tests/test_finance.py",
+    "/app/backend/tests/test_pricing.py",
+    "/app/backend/tests/test_admin_customs_dashboard.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "CRITICAL: clear the React Query cache on logout and on login (queryClient.clear()) in /app/frontend/src/store/auth.tsx — currently a Sales user sees the previous Admin session's customers and finance/customs KPIs.",
+    "Add a role-aware route guard in App.tsx (map route -> allowed roles, redirect/403 otherwise) so CS cannot open /admin/users.",
+    "Return 404 when the target document does not exist in PATCH /api/job-orders/{id}, POST /api/job-orders/{id}/shipment-status, PATCH /api/customs-docs/{id}, POST /api/invoices/{id}/mark-paid, POST /api/schedule-arrive/{id}/confirm (use matched_count).",
+    "Auth hardening: httpOnly cookie for the JWT, failed-login counter + lockout, idempotent seed_admin that re-hashes when ADMIN_PASSWORD changes, and explicit CORS origins from CORS_ORIGINS instead of '*' with allow_credentials.",
+    "Add DELETE (or soft-delete) for /api/customers; decide whether POST /api/audit-logs is required.",
+    "Add loading/error states to list pages and rename login demo test ids to demo-<role>."
+  ],
+  "critical_code_review_comments": [
+    "server.py: insert_one() mutates the passed dict by adding a BSON _id; create_customer forwarded that same dict to audit(), so every GET /api/audit-logs returned 500 ('ObjectId is not iterable'). I added an _id filter inside audit(); prefer passing copies or explicitly whitelisted change dicts.",
+    "server.py upsert_kurs / upsert_weekly_price returned `{**existing, ...}` straight from find_one (with _id) -> 500 on the update path. Fixed with strip(); adopt the rule that every find_one must use projection {'_id': 0}.",
+    "auth.tsx: token in localStorage + global axios.defaults means any XSS steals a 12h admin token, and no per-user query key means cached data crosses identities. Consider scoping query keys with user.id in addition to clearing the cache.",
+    "server.py is 1029 lines in one file — split into routers (auth, customers, quotation, job_order, finance, pricing, customs, admin) before it grows further.",
+    "Dashboard/list pages ignore useQuery isLoading/isError; add explicit states so 403/500 responses are visible to the user instead of rendering an empty table."
+  ],
+  "updated_files": [
+    "/app/backend/server.py (3 in-scope Mongo ObjectId serialization fixes: audit() strips _id from changes; upsert_kurs and upsert_weekly_price strip _id from the returned existing doc)",
+    "/app/backend/tests/conftest.py",
+    "/app/backend/tests/test_auth.py",
+    "/app/backend/tests/test_customers.py",
+    "/app/backend/tests/test_quotation.py",
+    "/app/backend/tests/test_job_order.py",
+    "/app/backend/tests/test_finance.py",
+    "/app/backend/tests/test_pricing.py",
+    "/app/backend/tests/test_admin_customs_dashboard.py",
+    "/app/backend/tests/_cleanup_audit_objectid.py (one-off data repair for the 9 audit_logs rows that already contained an ObjectId and kept GET /api/audit-logs at 500)"
+  ],
+  "success_rate": {"backend": "95.7% (90/94 pytest)", "frontend": "90% (all role flows work; 1 critical cross-user cache leak, 1 missing route guard)"},
+  "seed_data_creation": "TEST_-prefixed rows created via API: ~12 customers, several quotations (executed), 5 job orders (one with eta today+1, later arrive-confirmed), 6 invoices, 1 partner with bank details, kurs USD/EUR week_of 2026-01-05 (USD rate now 16123 from the UI test), weekly price TEST_JKT->SIN, trucking rate TEST_Priok->TEST_Bogor, 3 customs docs TEST_PIB-001, documents with auto_name, plus UI-created customer 'TEST_UI Customer QA'. No DELETE endpoints exist for customers/invoices/job-orders so this data persists.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "/app/memory/test_credentials.md is present and correct: admin supriyandilaawe@gmail.com / Admin@2026!; sales|cs|customs|finance|pricing @nusafreight.com / Demo@2026. All 6 logins verified via API and UI. NOTE: /app/auth_testing.md referenced in the instructions does not exist.",
+  "context_for_next_testing_agent": "Backend suite lives in /app/backend/tests (pytest.ini already sets -n 2 --dist loadscope; session fixtures admin/sales/cs/finance/customs/pricing return authenticated requests.Sessions with .user attached). Re-run: `cd /app/backend && python -m pytest tests/ -v --junitxml=/app/test_reports/pytest/pytest_results.xml`. The 4 intentionally-failing tests are documented gaps, not flakes: test_login_sets_httponly_cookie, test_brute_force_lockout, test_no_delete_endpoint_for_customers, test_shipment_status_nonexistent_job — flip them to passing once the main agent implements the features. When retesting the frontend cache leak, do it WITHOUT a page reload: login admin -> visit /master/customer -> click logout-btn -> login as sales -> /master/customer must show only Sinta Sales' customers and the dashboard must only show kpi-quot-total/kpi-quot-executed/kpi-arrivals. Login page redirects away if nf_token exists, so clear localStorage before goto('/login'). Demo button testids are demo-adminowner / demo-sales / demo-customerservice / demo-customs / demo-finance / demo-pricing.",
+  "rca_of_the_issue": "1) GET /api/audit-logs, POST /api/kurs (update path) and POST /api/weekly-prices (update path) returned 500 with ValueError: [TypeError(\"'ObjectId' object is not iterable\")]. Root cause: Motor's insert_one mutates the input dict by injecting a BSON ObjectId under '_id'; create_customer then persisted that mutated dict into audit_logs.changes, and the two upsert endpoints echoed a find_one result that still carried '_id'. FastAPI's jsonable_encoder cannot serialize ObjectId. Fixed by stripping '_id' in audit() and by using strip() on the echoed existing docs, plus a one-off script to repair the 9 already-poisoned audit_logs rows. Verified: 47/47 finance+pricing+admin tests pass afterwards. 2) Sales user seeing Admin's 20 customers and finance/customs KPIs: reproduced only on SPA navigation, never after a hard reload — root cause is the shared React Query cache (queryKey ['customers'], ['dashboard'], ['users'] with staleTime 30s) that is never invalidated when the identity changes in auth.tsx logout()/login(). Backend isolation is provably correct (pytest asserts every returned customer has sales_id == the sales user's id)."
+}
