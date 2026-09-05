@@ -1,16 +1,16 @@
 # NusaFreight ERP Test Credentials
 
 ## Admin (Owner)
-- Email: supriyandilaawe@gmail.com
-- Password: Admin@2026!
+- Email: your_email@example.com
+- Password: your_password_here
 - Role: admin
 
 ## Demo Users (all use password: Demo@2026)
-- sales@nusafreight.com — Sales
-- cs@nusafreight.com — Customer Service
-- customs@nusafreight.com — Customs
-- finance@nusafreight.com — Finance
-- pricing@nusafreight.com — Pricing
+- sales@nusafreight.com â€” Sales
+- cs@nusafreight.com â€” Customer Service
+- customs@nusafreight.com â€” Customs
+- finance@nusafreight.com â€” Finance
+- pricing@nusafreight.com â€” Pricing
 
 ## Endpoints
 - POST /api/auth/login  {email, password}
